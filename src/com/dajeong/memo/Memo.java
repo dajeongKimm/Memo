@@ -113,7 +113,7 @@ public class Memo {
 		for(String filename : fileList) {
 			System.out.println(filename);
 		}	
-		//선택한 파일 수정 		
+		//선택한 파일 수정 
 		boolean runFlag = true;
 		while(runFlag) {
 			System.out.print("수정할 파일명을 입력하세요.>>>>>");
@@ -125,36 +125,37 @@ public class Memo {
 					Path path = Paths.get(MEMO_DIR, filename);
 					try{
 						List<String> lines = Files.readAllLines(path);
-						for(String line : lines){
-							System.out.println(line);
-							String line2 = scanner.nextLine();
-								if(line2.equals(EXIT)) {
-									System.out.println("메모를 수정하였습니다.");
-									break;		
-								}else { //exit 입력전까지는 추가 content에 추가하는게 아니고 기존파일에 추가...
-									content.append(line);
-									content.append(line2+"\n\r");		
-								}
-							
-							//추가된거 저장..
-							if(!content.toString().equals("")) {
-								Path path2 = Paths.get(MEMO_DIR, filename);
-								try {
-									Files.write(path2, content.toString().getBytes());
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
+						System.out.println("수정할 내용을 입력해주세요.");
+						for(String line : lines) {
+						String line2 = scanner.nextLine();
+							if(line2.equals(EXIT)) { // /exit 입력시 수정완료.
+								System.out.println("메모를 수정하였습니다.");
+								break;		
+							}else if(line2.equals("")) { //아무것도 입력하지 않았을 때 기존 메모 출력
+								content.append(line);
+							}else if(line2.equals("/d")) { // /d 입력시 삭제.
+								content.append(line);
+								content.delete(0,content.length());
+							}else {//뭔가를 입력했을 때 새롭게 수정 
+								content.append(line2+"\n\r");
 							}
 						}//for
-						
+						Path path2 = Paths.get(MEMO_DIR, filename);
+							try {
+								Files.write(path2, content.toString().getBytes());
+							 } catch (Exception e) {
+								e.printStackTrace();
+							 }	
 					}catch(Exception e) {
 						e.printStackTrace();
 					}
 					runFlag =false;
-				}
+				}//if
 			}//for
 		}//while	
-	}
+		
+	
+	}//list2
 	
 	
 
