@@ -1,11 +1,14 @@
 package com.dajeong.memo;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -50,7 +53,7 @@ public class Memo {
 			if(line.equals(EXIT)) {
 				break;
 			}else {
-				content.append(line+"\n\r");
+				content.append(line+"\n");
 			}
 		}//while
 		
@@ -75,7 +78,7 @@ public class Memo {
 		
 	}
 
-	//파일목록 보기
+	//파일목록 보기 읽기 
 	public void list() {
 		File file = new File(MEMO_DIR);
 		String fileList[] = file.list();
@@ -88,13 +91,14 @@ public class Memo {
 			System.out.print("읽을 파일명을 입력하세요.>>>>>");
 			Scanner scanner = new Scanner(System.in);
 			String filename = scanner.nextLine();
+			String result = "";
 			for(int i = 0; i<fileList.length; i++) {
 				if(fileList[i].equals(filename)) {
 					Path path = Paths.get(MEMO_DIR, filename);
 					try{
 						List<String> lines = Files.readAllLines(path);
 						for(String line : lines) {
-							System.out.println(line);
+							System.out.println(line);	
 						}
 					}catch(Exception e) {
 						e.printStackTrace();
@@ -103,6 +107,7 @@ public class Memo {
 				}
 			}//for
 		}//while
+
 	}
 		
 
@@ -113,7 +118,7 @@ public class Memo {
 		for(String filename : fileList) {
 			System.out.println(filename);
 		}	
-		//선택한 파일 수정 
+		//선택한 파일 수정 		
 		boolean runFlag = true;
 		while(runFlag) {
 			System.out.print("수정할 파일명을 입력하세요.>>>>>");
@@ -125,27 +130,35 @@ public class Memo {
 					Path path = Paths.get(MEMO_DIR, filename);
 					try{
 						List<String> lines = Files.readAllLines(path);
-						System.out.println("수정할 내용을 입력해주세요.");
-						for(String line : lines) {
-						String line2 = scanner.nextLine();
-							if(line2.equals(EXIT)) { // /exit 입력시 수정완료.
-								System.out.println("메모를 수정하였습니다.");
-								break;		
-							}else if(line2.equals("")) { //아무것도 입력하지 않았을 때 기존 메모 출력
-								content.append(line);
-							}else if(line2.equals("/d")) { // /d 입력시 삭제.
-								content.append(line);
-								content.delete(0,content.length());
-							}else {//뭔가를 입력했을 때 새롭게 수정 
-								content.append(line2+"\n\r");
+						System.out.println("수정할 내용을 입력해주세요.");			
+						while(true) {
+							String line2 = scanner.nextLine();
+							if(line2.equals(EXIT)) { // /exit 입력시 수정 종료. 
+								System.out.println("수정이 완료되었습니다.");	
+								break;
+							}else if(line2.equals("/d")) {// /d입력시 기존마지막 한줄 삭제. 
+								///////////////////////////////////////////////////////////////////////////
+								
+								System.out.println("마지막줄이 삭제 되었습니다.");
+								break;
+							}else {// 그외 입력할 때는 덮어쓰기. 
+								Path path2 = Paths.get(MEMO_DIR, filename);
+								content.append(line2+"\n");
+								try {
+									Files.write(path2, content.toString().getBytes());
+								}catch(Exception e) {
+									e.printStackTrace();
+								}
 							}
-						}//for
-						Path path2 = Paths.get(MEMO_DIR, filename);
+						}//while				
+						if(!content.toString().equals("")) {
+							Path path2 = Paths.get(MEMO_DIR, filename);
 							try {
 								Files.write(path2, content.toString().getBytes());
-							 } catch (Exception e) {
+							} catch (Exception e) {
 								e.printStackTrace();
-							 }	
+							}	
+						}//if
 					}catch(Exception e) {
 						e.printStackTrace();
 					}
@@ -153,8 +166,6 @@ public class Memo {
 				}//if
 			}//for
 		}//while	
-		
-	
 	}//list2
 	
 	
@@ -188,4 +199,4 @@ public class Memo {
 		}//while		
 	}
 	
-}
+}//Memo
