@@ -138,7 +138,11 @@ public class Memo {
 								break;
 							}else if(line2.equals("/d")) {// /d입력시 기존마지막 한줄 삭제. 
 								///////////////////////////////////////////////////////////////////////////
-								
+								lines.remove(lines.size()-1);
+								for(String line: lines) {
+									//System.out.println(line);
+									content.append(line+"\r\n");
+								}
 								System.out.println("마지막줄이 삭제 되었습니다.");
 								break;
 							}else {// 그외 입력할 때는 덮어쓰기. 
